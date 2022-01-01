@@ -1,27 +1,56 @@
-<script context="module">
-    export const load = async ({ fetch }) => {
-        const res = await fetch('/api/todos')
-        const data = await res.json()
-        console.log(data)
-        
-        return {
-            props: {
-                data
-            }
+
+
+<script>
+    import Head from '$lib/Head.svelte' 
+    import { onMount } from 'svelte';
+    
+    export let todoName = ''
+    let dataTodo = []
+
+    const getDataTodos = async () => {
+        try {
+            const response = await fetch('/api/todos')
+            const todos = await response.json()
+            dataTodo = todos.data
+        } catch (error) {
+            console.log(error)
         }
+    }
+
+    onMount(() => {
+        getDataTodos()
+    })
+
+    const handleSubmit = async (name) => {
+        try {
+            const config = {
+                method: "POST",
+                body: JSON.stringify({
+                    name
+                })
+            }
+            
+            await fetch('/api/todos', config)
+            getDataTodos()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
+    const handleCreateTodo = () => {
+        handleSubmit(todoName)
+        todoName = ''
     }
 </script>
 
+<Head title="Todos" />
 <h1 class="text-center text-4xl">Todos</h1>
-<div class="max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden md:max-w-2xl">
-    <div class="md:flex">
-        <div class="md:shrink-0">
-            <img class="h-48 w-full object-cover md:h-full md:w-48" src="/img/store.jpg" alt="Man looking at item at a store">
-        </div>
-        <div class="p-8">
-            <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Case study</div>
-            <a href="/" class="block mt-1 text-lg leading-tight font-medium text-black hover:underline">Finding customers for your new business</a>
-            <p class="mt-2 text-gray-500">Getting a new business off the ground is a lot of hard work. Here are five ideas you can use to find your first customers.</p>
-        </div>
-    </div>
+<form on:submit|preventDefault={handleCreateTodo}>
+    <input class="mt-5 py-1.5 px-1.5 w-full rounded ring-offset-2 ring-2" type="text" bind:value={todoName} placeholder="Write your todo" />
+</form>
+
+<div>
+    {#each dataTodo as todo}
+        <p>{todo.name}</p>
+    {/each}
 </div>
