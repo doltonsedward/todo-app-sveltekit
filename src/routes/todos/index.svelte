@@ -25,28 +25,12 @@
 				method: !id ? 'POST' : 'PUT',
 				body: JSON.stringify({
 					name,
-					status: 'waiting'
+					status: !id ? 'waiting' : 'done'
 				})
 			};
 
-			await fetch(`/api${!id ? '/todos' : '/todos' + id}`, config);
+			await fetch(`/api${!id ? '/todos' : '/todos/' + id}`, config);
 			getDataTodos();
-		} catch (error) {
-			console.log(error);
-		}
-	};
-
-	const handleUpdate = async (id) => {
-		try {
-			const config = {
-				method: 'PUT',
-				body: JSON.stringify({
-					name: 'oke',
-					status: 'done'
-				})
-			};
-
-			await fetch('/api/todos/' + id, config);
 		} catch (error) {
 			console.log(error);
 		}
@@ -57,7 +41,7 @@
 		todoName = '';
 	};
 
-	$: console.log(dataTodo);
+	$: getDataTodos();
 </script>
 
 <Head title="Todos" />
@@ -73,7 +57,7 @@
 <div class="mt-5">
 	{#each dataTodo as todo, id}
 		<div class="p-4 my-2 card shadow-lg">
-			<label on:click={() => handleUpdate(id)} class="flex">
+			<label on:click={() => handleSubmit(todo.name, id)} class="flex">
 				<input type="checkbox" class="checkbox mr-3" />
 				<span>{todo.name}</span>
 			</label>
