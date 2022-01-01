@@ -1,3 +1,17 @@
+<script context="module">
+    export const load = async ({ fetch }) => {
+        const res = await fetch('/api/todos')
+        const data = await res.json()
+        console.log(data)
+        
+        return {
+            props: {
+                data
+            }
+        }
+    }
+</script>
+
 <h1 class="text-center text-4xl">Todos</h1>
 <div class="max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden md:max-w-2xl">
     <div class="md:flex">
